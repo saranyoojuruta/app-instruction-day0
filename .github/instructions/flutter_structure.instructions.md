@@ -78,7 +78,8 @@ applyTo: '**'
 │   │   │       │   └── auth_binding.dart
 │   │   │       └── widgets/                # widgets เฉพาะฟีเจอร์
 │   │   │           └── login_form.dart
-│   │   └── <more_features>/...             # profile, order, payment, ...
+│   │   │
+│   │   └── <more_features>/...             # profile, order, payment, ... หน้าอื่น ๆที่เพิ่มได้
 │   │
 │   └── shared_libraries.dart               # export barrel ถ้าต้องการ
 │
