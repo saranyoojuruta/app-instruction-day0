@@ -95,11 +95,16 @@ Controller อัปเดต state + render UI
    - สร้าง **Pages / Controllers / Bindings / Widgets**
    - Controller เรียกใช้ UseCase เสมอ (ห้ามเรียก datasource ตรง)
 
-5. **ผูก DI และ Route**
+5. **ทำ Widgets**
+   - สร้าง widgets เฉพาะฟีเจอร์ใน `features/<feature>/presentation/widgets/`
+   - ถ้า widgets นำกลับใช้ได้หลายฟีเจอร์ ให้ย้ายไป `shared/`
+   - ห้ามสร้าง widgets ในหน้า Page โดยตรง
+
+6. **ผูก DI และ Route**
    - ผูก dependencies ใน `features/<feature>/presentation/bindings/<feature>_binding.dart`
    - เพิ่มเส้นทางใน `app/routes/app_routes.dart`
 
-6. **เขียน Tests**
+7. **เขียน Tests**
    - โครงสร้าง test แบบ **mirror source**:
      ```
      test/features/<feature>/
@@ -258,8 +263,9 @@ Controller อัปเดต state + render UI
 
 - **Multi-tab:**
   - หาก SC-xx หรือ WG-xx หลายหมายเลขเป็นหน้าจอเดียวกันแต่แยกเป็น Tab (เช่น Tab ข้อมูลพื้นฐาน / Tab ข้อมูลอื่น ๆ)
-  - ให้สร้างเป็น 1 page ที่มี TabBar/TabView และ controller เดียวกัน
-  - ตัวอย่าง: WG-10 (Tab1), WG-11 (Tab2) → 1 page + TabBar + controller
+  - ให้สร้างหน้าจอหลัก 1 page (main page) ที่มี TabBar/TabView
+  - แต่ละ tab ให้แยกเป็น page ของตัวเอง และแต่ละ tab มี controller ของตัวเอง (ไม่ใช้ controller เดียวกัน)
+  - ตัวอย่าง: WG-10 (Tab1), WG-11 (Tab2) → main page + TabBar + WG-10_page.dart + WG-11_page.dart + controller แยกแต่ละ tab
 
 - **แยก features:**
   - ถ้า SC-XX หมายถึงฟีเจอร์ใหม่ที่ไม่ซ้ำกับของเดิม ให้แยกเป็น features ใหม่ตามโครงสร้าง
