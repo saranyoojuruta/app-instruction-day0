@@ -63,7 +63,7 @@ UI (Page/Widget)
       └─ UseCase (Domain)         # 1 UseCase ต่อ 1 การทำงาน
           └─ Repository (Domain)  # เรียกใช้งานผ่านตัว Interface
               └─ Repository Impl (Data)
-                  ├─ Datasource Remote (Dio)
+                  ├─ Datasource api (Dio)
                   ├─ Datasource Local (Cache/Prefs/DB)
                   └─ Mappers: DTO ↔ Entity
                        ↓ Result<T>
@@ -135,7 +135,7 @@ Controller อัปเดต state + render UI
    - (ถ้าใช้) อ้างอิง `core/usecase/base_use_case.dart` หรือ `features/<feature>/domain/usecases/base_use_case.dart`
 
 3. **ทำ Data**
-   - สร้าง **Models/Request**, **Mappers**, **Datasources** (`remote`/`local`), และ **Repository Impl**
+   - สร้าง **Models/Request**, **Mappers**, **Datasources** (`api`/`local db`), และ **Repository Impl**
    - map DTO ↔ Entity ผ่าน `mappers/` เท่านั้น
 
 4. **ทำ Presentation**
