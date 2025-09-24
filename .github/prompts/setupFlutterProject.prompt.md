@@ -75,7 +75,7 @@ analysis_options.yaml
 ## 2. Clean Architecture & Technologies
 - **Clean Architecture:**
   - `domain/`: entities, repositories (abstract), usecases
-  - `data/`: datasources (remote/local), models, mappers, repositories (impl)
+  - `data/`: datasources (api/local db), models, mappers, repositories (impl)
   - `presentation/`: pages, controllers, bindings, widgets (per feature)
 - **GetX:**
   - ใช้ GetX สำหรับ state, navigation, DI เท่านั้น
