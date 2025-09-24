@@ -1,12 +1,59 @@
 ---
 applyTo: '**'
 ---
+- บังคับโครงสร้างนี้กับโปรเจกต์ Flutter/Dart ทุกครั้งที่มีการ prompt
+- ทุกครั้งที่มีการ prompt ให้ทำ todolist เสมอก่อนเริ่มทำงาน เพื่อแบ่งขั้นตอนการทำงานให้ชัดเจน
 ## 📝 Dependency Rule
 
 - Dependency Rule จาก นอก → ใน เท่านั้น
 ```Presentation → Domain``` และ ```Data → Domain```
 - Domain ไม่รู้จัก Flutter/Dio/Storage ใด ๆ (Pure Dart)
 - ติดต่อข้ามเลเยอร์ผ่าน interfaces (Repository contracts) เท่านั้น
+
+
+### TabBar/TabView Usage
+- ถ้ามีการใช้ `DefaultTabController` หรือ `TabBarView` ในหน้าใด ๆ **ต้อง**
+  - กำหนดและควบคุม `TabController` ผ่าน controller หลักของหน้านั้น (เช่น GetX controller)
+  - ห้ามสร้าง TabController ใน widget โดยตรง ให้ inject หรือดึงจาก controller หลักเท่านั้น
+  - แต่ละ tab/page ที่อยู่ใน TabBarView **ต้องแยกเป็นไฟล์และ widget ของตัวเอง**
+  - Logic ของแต่ละ tab/page ให้แยก controller ของตัวเอง (child controller) และ inject ผ่าน controller หลัก
+  - หลีกเลี่ยงการเขียน logic ของแต่ละ tab/page ปะปนใน controller หลัก
+
+ตัวอย่าง:
+
+```dart
+// ใน main controller
+class MainController extends GetxController with GetSingleTickerProviderStateMixin {
+  late TabController tabController;
+  @override
+  void onInit() {
+    tabController = TabController(length: 2, vsync: this);
+    super.onInit();
+  }
+  @override
+  void onClose() {
+    tabController.dispose();
+    super.onClose();
+  }
+}
+
+// ใน main page
+class MainPage extends GetView<MainController> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: TabBar(controller: controller.tabController, ...),
+      body: TabBarView(controller: controller.tabController, children: [Tab1Page(), Tab2Page()]),
+    );
+  }
+}
+
+// ในแต่ละ tab/page
+class Tab1Page extends GetView<Tab1Controller> { ... }
+class Tab2Page extends GetView<Tab2Controller> { ... }
+```
+
+> สรุป: ถ้าใช้ TabBar/TabBarView ต้องแยก controller และ logic ของแต่ละ tab/page ออกจากกันเสมอ
 
 ### เส้นทางข้อมูล (Data/Control Flow)
 
@@ -94,6 +141,22 @@ Controller อัปเดต state + render UI
 4. **ทำ Presentation**
    - สร้าง **Pages / Controllers / Bindings / Widgets**
    - Controller เรียกใช้ UseCase เสมอ (ห้ามเรียก datasource ตรง)
+   - Controller access ผ่าน `controller` property ของ GetView เท่านั้น (ห้ามใช้ Get.find() ใน widget/build)
+   - ให้ใช้ stateMixins ใน controller เพื่อแยก logic ที่ใช้ซ้ำได้
+   - ถ้าหน้ามีการ โหลดข้อมูล ให้ใช้ `StateMixin<T>` และ `controller.obx(...)` ในหน้า Page
+   - ถ้าหน้ามีการ โหลดข้อมูลหลายชุด ให้ใช้ `MultipleStatusMixin`
+   - ถ้าหน้ามีการ โหลดข้อมูลที่ซับซ้อน (เช่น มี filter, search, pagination) ให้ใช้ `PagingMixin` หรือ `PagingController` (ถ้าใช้ infinite scroll)
+   - ถ้าหน้ามีการ Scroll ที่ซับซ้อน (เช่น scroll to top/bottom, scroll to index) ให้ใช้ `ScrollMixin`
+   - ถ้าหน้ามีการ Refresh (pull to refresh) ให้ใช้ `RefreshMixin
+   - ถ้าหน้ามีการ โหลดข้อมูล + Refresh + Pagination ให้ใช้ `PagingRefreshMixin`
+   - ถ้าหน้ามีการ โหลดข้อมูล + Refresh + Pagination + Scroll ให้ใช้ `PagingRefreshScrollMixin`
+   - ถ้าหน้ามีการ โหลดข้อมูล + Refresh + Scroll ให้ใช้ `RefreshScrollMixin`
+   - ถ้าหน้ามีการ โหลดข้อมูล + Pagination ให้ใช้ `PagingMixin`
+   - ถ้าหน้ามีการ โหลดข้อมูล + Scroll ให้ใช้ `ScrollMixin`
+   - ถ้าหน้ามีการ Refresh + Pagination ให้ใช้ `PagingRefreshMixin`
+   - ถ้าหน้ามีการ Refresh + Scroll ให้ใช้ `RefreshScrollMixin`
+   - ถ้าหน้ามีการ Pagination + Scroll ให้ใช้ `PagingScrollMixin`
+   - ถ้าถ้ามีการ ใช้ state ที่ซับซ้อน ให้แยกเป็น controller ย่อย (child controller) แล้ว inject ผ่าน binding
 
 5. **ทำ Widgets**
    - สร้าง widgets เฉพาะฟีเจอร์ใน `features/<feature>/presentation/widgets/`
@@ -150,7 +213,7 @@ Controller อัปเดต state + render UI
         - SessionService: เก็บข้อมูล session ปัจจุบัน เช่น access token, refresh token, current user
         - AuthSessionService: ทุกฟีเจอร์ที่ต้องเรียก API ก็ใช้ AuthSessionService ดึง token ไม่ต้องเขียนเองซ้ำ
         - DeeplinkService: รองรับการเปิดแอพผ่านลิงก์ (เช่น เปิดหน้าสินค้า, เปิดหน้าชำระเงิน)
-        - AnalyticsService: ส่ง event ไปยัง Google Analytics, Firebase Analytics, หรือ Amplitude
+        <!-- - AnalyticsService: ส่ง event ไปยัง Google Analytics, Firebase Analytics, หรือ Amplitude -->
 - Test โครงสร้าง mirror source → test/features/<feature>/...
 
 
@@ -224,9 +287,9 @@ Controller อัปเดต state + render UI
   # --- Theme/Font ---
   google_fonts: ^6.1.0
   # --- Firebase (ถ้าใช้ FCM/Analytics) ---
-  firebase_core: ^2.24.2
-  firebase_messaging: ^14.7.10
-  firebase_analytics: ^10.8.0
+  firebase_core: ^4.1.1
+  firebase_messaging: ^16.0.2
+  firebase_analytics: ^12.0.2
   # --- อื่น ๆ ตามที่ใช้จริง ---
 
 - ตัวอย่างใน pubspec.yaml:
@@ -242,9 +305,9 @@ Controller อัปเดต state + render UI
     shared_preferences: ^2.2.2
     flutter_secure_storage: ^9.0.0
     google_fonts: ^6.1.0
-    firebase_core: ^2.24.2
-    firebase_messaging: ^14.7.10
-    firebase_analytics: ^10.8.0
+    firebase_core: ^4.1.1
+    firebase_messaging: ^16.0.2
+    firebase_analytics: ^12.0.2
     # ...
   dev_dependencies:
     injectable_generator: ^2.4.0
@@ -264,7 +327,7 @@ Controller อัปเดต state + render UI
 - **Multi-tab:**
   - หาก SC-xx หรือ WG-xx หลายหมายเลขเป็นหน้าจอเดียวกันแต่แยกเป็น Tab (เช่น Tab ข้อมูลพื้นฐาน / Tab ข้อมูลอื่น ๆ)
   - ให้สร้างหน้าจอหลัก 1 page (main page) ที่มี TabBar/TabView
-  - แต่ละ tab ให้แยกเป็น page ของตัวเอง และแต่ละ tab มี controller ของตัวเอง (ไม่ใช้ controller เดียวกัน)
+  - แต่ละ tab ให้แยกเป็น page ของตัวเอง และแต่ละ tab มี controller ของตัวเอง (ไม่ใช้ controller เดียวกัน) และใช้ TabController ของ Flutter ใน main page ควบคุมการเปลี่ยน tab และ TabController ของแต่ละ tab ควบคุม state ภายใน tab นั้น ๆ โดยที่ต้องอยู่ใน controller ของ tab นั้น ๆ
   - ตัวอย่าง: WG-10 (Tab1), WG-11 (Tab2) → main page + TabBar + WG-10_page.dart + WG-11_page.dart + controller แยกแต่ละ tab
 
 - **แยก features:**
@@ -272,4 +335,64 @@ Controller อัปเดต state + render UI
 
 > สรุป: การแยกหรือรวมหน้าจอให้ดูที่ logic จริงของ UI/UX ว่าเป็น state/tab เดียวกันหรือไม่ ไม่แยกตามหมายเลข SC/WG อย่างเดียว
 
+- **Orchestrator Pattern:**
+  - ใช้ OrchestratorService ใน core/services/orchestrator_service.dart เพื่อจัดการ WG widget ทั้งหมดในแอป
+  - OrchestratorService จะทำหน้าที่:
+    - สร้าง/ทำลาย WG widget ตามคำสั่งจาก controller
+    - ป้องกันการแสดง toast ซ้ำซ้อน (toast cooldown)
+    - จัดคิว popup ให้แสดงทีละอัน
+    - ล็อกสถานะ modal เมื่อมี modal แสดงอยู่
+  - ทุก controller ที่ต้องการแสดง WG widget ต้องเรียกผ่าน OrchestratorService เท่านั้น ห้ามสร้าง/แสดง WG widget โดยตรงใน controller/page
+
+- **WG Widget Compliance:**
+  - ต้องใช้ WG widget ตามที่กำหนดใน wireframe เท่านั้น
+  - ห้ามสร้าง WG widget ใหม่ที่ไม่อยู่ในรายการที่กำหนด
+  - ถ้าต้องการเพิ่ม WG widget ใหม่ ต้องขออนุมัติและอธิบายการใช้งานให้ชัดเจนก่อน
+
+- **ReadMe:**
+  - อธิบายการโปรงโครงสร้างแอป, การเพิ่มฟีเจอร์ใหม่, การใช้ OrchestratorService, และกฎการตั้งชื่อใน README.md ของโปรเจกต์เสมอ
+  - อัพเดต README.md ทุกครั้งที่มีการเปลี่ยนแปลงโครงสร้างหรือกฎ
+  - ตัวอย่าง README.md:
+    ```markdown
+    # Project Structure
+
+    ## Folder Structure
+    - lib/
+      - app/: Entry, env, routes, DI
+      - core/: Cross-cutting concerns (Dio, storage, theme, error, etc.)
+      - shared/: Reusable widgets/UI (not feature-specific)
+      - features/: Feature modules (auth, profile, etc.)
+      - shared_libraries.dart
+
+    ## Adding New Features
+    1. Create feature structure using generator script.
+    2. Implement Domain layer (Entities, Repository interfaces, UseCases).
+    3. Implement Data layer (Models, Mappers, Datasources, Repository implementations).
+    4. Implement Presentation layer (Pages, Controllers, Bindings, Widgets).
+    5. Register DI in feature bindings.
+    6. Add routes in app/routes/app_routes.dart.
+    7. Write tests mirroring source structure.
+
+    ## OrchestratorService
+    - Manages WG widgets globally.
+    - Prevents toast spamming.
+    - Queues popups.
+    - Locks modal state.
+
+    ## Naming Conventions
+    - UseCase: *_use_case.dart
+    - Repository interface: *_repository.dart
+    - Repository implementation: *_repository_impl.dart
+    - Entity: *_entity.dart
+    - DTO: data/models_request/ and data/models/
+    - Controller: *_controller.dart
+    - Page: *_page.dart
+    - Widget: *_widget.dart
+    - Binding: *_binding.dart
+    - Mapper: *_mapper.dart
+    - Service: *_service.dart
+    - Datasource: *_datasource.dart
+    - Interceptor: *_interceptor.dart
+    - Model: *_model.dart
+    ```
 
