@@ -4,8 +4,26 @@ mode: agent
 สร้างโปรเจค mobile app สำหรับ iOS และ Android และ webbrowser โดยใช้ flutter ตามรายละเอียดด้านล่าง ให้ยึดรูปแบบและโครงสร้างโปรเจคตามเอกสาร ไฟล์ md ที่เกี่ยวข้องเป็นสำคัญ
 
 project name : ให้ระบุชื่อโปรเจคโดยถามผู้ใช้จาก input chat
-package: อ้างอิงจาก project name โดยใช้ snake_case
+package: ในส่วนของ android ให้อ้างอิง package name จาก ไฟล์ google-services.json ที่ให้มาเสมอ
+ส่วน iOS ให้อ้างอิง package name จาก ไฟล์ GoogleService-Info.plist ที่ให้มาเสมอ และ package name ต้องตรงกับ android package name ถ้าไม่มีไฟล์นี้ให้ขใช้จาก project name แทน โดยใช้รูปแบบ snake_case
+platform: iOS, Android, Web
+architecture: Flutter Clean Architecture with GetX
+state management: GetX
+routing: GetX routes
+dependency injection: GetX/get_it with injectable
+http client: Dio
+local storage: SharedPreferences, SecureStorage
+form validation: form_field_validator
+image: cached_network_image
+json serialization: json_serializable
+environment variables: flutter_dotenv
+linting: flutter_lints
+code format: dart format
+code analysis: dart analyze
+CI/CD: GitHub Actions, Bitrise, Codemagic
 theme: ตาม theme.md
+ในส่วนของ firebase crashlytics ให้ใช้ไฟล์ google-services.json และ GoogleService-Info.plist ที่ให้มาเสมอ ถ้าไม่มีไฟล์นี้ให้ข้ามไป
+ในส่วนของ google authentication ให้ใช้ไฟล์ google-services.json และ GoogleService-Info.plist ที่ให้มาเสมอ ถ้าไม่มีไฟล์นี้ให้ข้ามไป
 
 important: ต้องทำตาม  Key Features และ Theme Guideline ให้ถูกต้อง และทุกครั้งที่เปิด app ขึ้นมา จะต้องทำการเปิดหน้า Splash Screen เสมอ ก่อนจะแทนที่ด้วยหน้าหลัก
 important2: ต้องเป็นการสร้างโปรเจคมาใหม่ทุกครั้ง ห้ามลบหรือแก้ไขโปรเจคอื่น ๆ ที่มีอยู่แล้ว จะต้องเป็นการ new project ขึ้นมาใหม่เสมอ
