@@ -1,10 +1,11 @@
 ---
 applyTo: '**'
 ---
+- บังคับโครงสร้างนี้กับโปรเจกต์ Flutter/Dart ทุกครั้งที่มีการ prompt
 .
 ├── lib/
+│   ├── main.dart                           # จุดเริ่มต้นของแอป
 │   ├── app/                                # แอประดับสูง (entry, env, routes, DI)
-│   │   ├── main.dart                       # จุดเริ่มต้นของแอป
 │   │   ├── env/                            # ค่าคอนฟิก per environment
 │   │   │   ├── app_env.dart                # sealed class / enum Env { dev, stg, prod }
 │   │   │   └── env_config.dart             # base + impl (API baseUrl, feature flags)
