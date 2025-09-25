@@ -50,37 +50,35 @@ applyTo: '**'
 │   │   │       └── bottom_nav_bar_widget.dart # Main page bottom navigation bar
 │   │   └── bindings/                       # Global bindings ถ้าจำเป็น
 │   │
-│   ├── features/                           # แยกตามฟีเจอร์ (สเกลง่าย/แยกทีมทำงานได้)
-│   │   ├── auth/                           # ตัวอย่างฟีเจอร์การเข้าสู่ระบบ
-│   │   │   ├── domain/                     # business logic (pure Dart)
-│   │   │   │   ├── entities/               # pure Dart entities
-│   │   │   │   │   └── user.dart           # entity หลัก เช่น User
-│   │   │   │   ├── repositories/           # contracts (abstract)
-│   │   │   │   │   └── auth_repository.dart # interface
-│   │   │   │   └── usecases/               # use cases
-│   │   │   │       ├── login_use_case.dart # use case เช่น login
-│   │   │   ├── data/                       # data layer (API, DB, cache)
-│   │   │   │   ├── datasources/
-│   │   │   │   │   ├── remote/             # API/HTTP/Firebase per feature
-│   │   │   │   │   │   └── auth_api.dart   
-│   │   │   │   │   └── local/              # cache/db per feature
-│   │   │   │   │       └── auth_cache.dart 
-│   │   │   │   ├── models/                 # DTOs responses
-│   │   │   │   ├── models_request/         # DTOs requests
-│   │   │   │   ├── mappers/                # map DTO <-> Entity
-│   │   │   │   └── repositories/           # implementations
-│   │   │   │       └── auth_repository_impl.dart   
-│   │   │   └── presentation/               # UI (Flutter) + state management (GetX)
-│   │   │       ├── pages/                  # หน้าจอ เช่น login
-│   │   │       │   └── login_page.dart
-│   │   │       ├── controllers/            # Controller/ViewModel
-│   │   │       │   └── login_controller.dart
-│   │   │       ├── bindings/               # Binding สำหรับ DI
-│   │   │       │   └── auth_binding.dart
-│   │   │       └── widgets/                # widgets เฉพาะฟีเจอร์
-│   │   │           └── login_form.dart
-│   │   │
-│   │   └── <more_features>/...             # profile, order, payment, ... หน้าอื่น ๆที่เพิ่มได้
+│   ├── domain/                     # business logic (pure Dart)
+│   │   │   ├── entities/               # pure Dart entities
+│   │   │   │   └── user.dart           # entity หลัก เช่น User
+│   │   │   ├── repositories/           # contracts (abstract)
+│   │   │   │   └── auth_repository.dart # interface
+│   │   │   └── usecases/               # use cases
+│   │   │       ├── login_use_case.dart # use case เช่น login
+|   ├── data/                       # data layer (API, DB, cache)
+│   │   ├── datasources/
+│   │   │   ├── remote/             # API/HTTP/Firebase per feature
+│   │   │   │   └── auth_api.dart   
+│   │   │   └── local/              # cache/db per feature
+│   │   │       └── auth_cache.dart
+│   │   ├── models/                 # DTOs responses
+│   │   ├── models_request/         # DTOs requests
+│   │   ├── mappers/                # map DTO <-> Entity
+│   │   └── repositories/           # implementations
+│   │       └── auth_repository_impl.dart
+│   ├── presentation/               # UI (Flutter) + state management (GetX)
+│   │   ├── Splash/                  # หน้าจอ (per feature)
+│   │   │  ├── pages/                  # หน้าจอ เช่น splash
+│   │   │  │   └── splash_page.dart
+│   │   │  ├── controllers/            # Controller/ViewModel
+│   │   │  │   └── splash_controller.dart
+│   │   │  ├── bindings/               # Binding สำหรับ DI
+│   │   │  │   └── splash_binding.dart
+│   │   │  └── widgets/                # widgets เฉพาะฟีเจอร์
+│   │   │      └── splash_form.dart
+│   │   ├── <more>/...                    # ตัวอย่างฟีเจอร์การเข้าสู่ระบบ   
 │   │
 │   └── shared_libraries.dart               # export barrel ถ้าต้องการ
 │
