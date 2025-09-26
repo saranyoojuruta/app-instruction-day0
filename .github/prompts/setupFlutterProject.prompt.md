@@ -24,9 +24,10 @@ mode: agent
 ## ⚠️ Setup Rules
 
 1. **Splash Screen**: ทุกครั้งเปิดแอปต้องมี Splash Screen ก่อนไปหน้าหลัก
-2. **New Project Only**: สร้างโปรเจคใหม่เสมอ ห้ามแก้ไขโปรเจคเดิม
-3. **Quality Check**: รัน `flutter analyze` และเช็คตาม `checklist.md`
-4. **Follow Architecture**: ยึดตาม `flutter_default.instructions.md` และ `flutter_structure.instructions.md`
+2. **Home page**: ต้องสร้างหน้า Home page และ navigation bar 5 menu (bottom nav 5 menu)
+3. **New Project Only**: สร้างโปรเจคใหม่เสมอ ห้ามแก้ไขโปรเจคเดิม
+4. **Quality Check**: รัน `flutter analyze` และเช็คตาม `checklist.md`
+5. **Follow Architecture**: ยึดตาม `flutter_default.instructions.md` และ `flutter_structure.instructions.md`
 
 ## 🗂️ Initial Project Structure
 
